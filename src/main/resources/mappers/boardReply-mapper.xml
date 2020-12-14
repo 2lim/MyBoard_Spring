@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="BoardReply">
+	<!-- 원하는 포맷에 맞춰 출력하기 위해 resultMap 등록 -->
+	<resultMap id="resultBoardReply" type="BoardReply">
+		<!-- property는 필드명, column 은 DB 컬럼 명을 입력한다 -->
+		<id property="comment_id" column="COMMENT_ID" />
+		<result property="board_num" column="BOARD_NUM" />
+		<result property="comment_name" column="COMMENT_NAME" />
+		<result property="comment_pwd" column="COMMENT_PWD" />
+		<result property="comments" column="COMMENTS" />
+		<result property="regdate" column="REGDATE" />
+	</resultMap>
+	<!-- 해당 게시글에 대한 댓글 리스트 조회 -->
+	<select id="selectBoardReplyAll" parameterType="string"
+		resultType="arraylist" resultMap="resultBoardReply">
+		SELECT * FROM BOARD_COMMENT WHERE
+		BOARD_NUM = #{board_num}
+	</select>
+	<!-- 댓글 단일 조회 -->
+	<select id="selectBoardReply" parameterType="string"
+		resultType="BoardReply" resultMap="resultBoardReply">
+		SELECT * FROM BOARD_COMMENT WHERE
+		COMMENT_ID = #{comment_id}
+	</select>
+	<!-- 댓글 입력 -->
+	<insert id="insertBoardReply" parameterType="BoardReply"
+		flushCache="true" statementType="PREPARED" timeout="20">
+		INSERT INTO
+		BOARD_COMMENT VALUES(
+		'BR'||TO_CHAR(SYSDATE,'RRMMDD')||LPAD(BOARD_COMMENT_SEQ.NEXTVAL,2,'0'),
+		#{board_num}, #{comment_name}, #{comment_pwd}, #{comments}, SYSDATE)
+	</insert>
+	<!-- 댓글 수정 -->
+	<update id="updateBoardReply" parameterType="BoardReply"
+		flushCache="true" statementType="PREPARED" timeout="20">
+		UPDATE
+		BOARD_COMMENT SET COMMENTS = #{comments} WHERE COMMENT_ID =
+		#{comment_id}
+		AND COMMENT_PWD = #{comment_pwd}
+	</update>
+	<!-- 댓글 삭제 -->
+	<delete id="deleteBoardReply" parameterType="BoardReply"
+		flushCache="true" statementType="PREPARED" timeout="20"> DELETE FROM
+		BOARD_COMMENT
+		WHERE COMMENT_ID = #{comment_id} AND COMMENT_PWD = #{comment_pwd}
+	</delete>
+</mapper>
