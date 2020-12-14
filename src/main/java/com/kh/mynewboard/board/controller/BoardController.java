@@ -17,7 +17,13 @@ import com.kh.mynewboard.board.model.service.BoardService;
 import com.kh.mynewboard.board.model.vo.Board;
 
 @Controller
+//@RequestMapping(value="/board")	
+//board를 1차적으로 걸어주고 다음 어노테이션 걸러줌 어노테이션은 바로 밑에 있는 것이 적용되는 것 
+//메소드 이름 같아도 상관없음 하지만 파라미터까지 같다면 다형성으로도 자바에서 성립할 수 없음
 public class BoardController {
+	// 1. url에 뭐가 들어오는지
+		// 2. view 부분 결정
+		// 3. service 에 있는 이름 호출
 	@Autowired
 	private BoardService bService;
 	@Autowired
@@ -25,13 +31,21 @@ public class BoardController {
 	public static final int LIMIT = 10;
 
 	@RequestMapping(value = "/bList.do", method = RequestMethod.GET)
-	public ModelAndView boardListService(@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "keyword", required = false) String keyword, ModelAndView mv) {
+	
+	public ModelAndView boardListService(
+			//여기서 defaultValue 대신에 required = false를 사용할수도 있다, 처음 list로 들어가면 page 값이 없기 때문에
+			@RequestParam(name = "page", defaultValue = "1") int page,
+			@RequestParam(name = "keyword", required = false) String keyword, 
+			ModelAndView mv) {
+			//required = 의 기본값은 true, true로 되어 잇으면 해당 필드 값이 꼭 있어야한다
+			//만약 true인데 필드 값이 없는경우 예외가 발생한다
+			//그래서 값이 잇을수도 있고 없을 수도 있는 경우에는 false를 사용한다
 		try {
 			int currentPage = page;
-			// 한 페이지당 출력할 목록 갯수
+			// 한 페이지당 출력할 목록 갯수, 페이징
 			int listCount = bService.totalCount();
 			int maxPage = (int) ((double) listCount / LIMIT + 0.9);
+			//검색
 			if (keyword != null && !keyword.equals(""))
 				mv.addObject("list", bService.selectSearch(keyword));
 			else
@@ -87,7 +101,10 @@ public class BoardController {
 	}
 
 	@RequestMapping(value = "/bInsert.do", method = RequestMethod.POST)
-	public ModelAndView boardInsert(Board b, @RequestParam(name = "upfile", required = false) MultipartFile report,
+	public ModelAndView boardInsert(Board b, 
+			//upfile의 경우 jsp에 잇는 input에 upfile을 적어줬기때문에 여기에 null값이 들어오는 경우는 없지만 
+			//만약 null값이 들어올 수 잇을 경우 required = false를 사용해준다
+			@RequestParam(name = "upfile", required = false) MultipartFile report,
 			HttpServletRequest request, ModelAndView mv) {
 		
 			if (report != null && !report.equals(""))
@@ -101,7 +118,7 @@ public class BoardController {
 
 	@RequestMapping(value = "/bUpdate.do", method = RequestMethod.POST)
 	public ModelAndView boardUpdate(Board b, @RequestParam(name = "page", defaultValue = "1") int page,
-	@RequestParam("upfile") MultipartFile report, HttpServletRequest request, ModelAndView mv) {
+	@RequestParam(name = "upfile") MultipartFile report, HttpServletRequest request, ModelAndView mv) {
 		try {
 			//첨부파일 저장
 			if (report != null && !report.equals("")) {
@@ -134,7 +151,7 @@ public class BoardController {
 			removeFile(b.getBoard_file(), request);
 			bService.deleteBoard(board_num);
 			mv.addObject("currentPage", page);
-			mv.setViewName("redirect:blist.do");
+			mv.setViewName("redirect:bList.do");
 		} catch (Exception e) {
 			mv.addObject("msg", e.getMessage());
 			mv.setViewName("errorPage");

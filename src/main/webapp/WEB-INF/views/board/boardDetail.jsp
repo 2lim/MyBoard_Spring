@@ -43,17 +43,17 @@
 				<c:url var="bupview" value="bRenew.do">
 					<!-- 수정페이지로 이동할때 들고 들어가는 값들 -->
 					<c:param name="board_num" value="${board.board_num}" />
-					<c:param name="page" value="${currentPage}" />
 				</c:url>
+				<!-- c:url에 적었던 value값 -->
+				<a href="${bupview}"> [수정 페이지로 이동] </a> &nbsp;&nbsp;
 				<!-- 글 삭제 클릭했을때 이동하는 페이지 -->
 				<c:url var="bdelete" value="bDelete.do">
 					<!-- 글 삭제로 이동할때 들고 들어가는 값들 -->
 					<c:param name="board_num" value="${board.board_num}" />
+					<c:param name="page" value="${currentPage}" />
 				</c:url> 
-				<!-- c:url에 적었던 value값 -->
-				<a href="${bupview}"> [수정 페이지로 이동] </a> &nbsp;&nbsp;
 				<a href="${bdelete}"> [글 삭제] </a> &nbsp;&nbsp; 
-				<c:url var="blist" value="blist.do">
+				<c:url var="blist" value="bList.do">
 					<c:param name="page" value="${currentPage}" />
 				</c:url> <a href="${blist}">[목록]</a></td>
 		</tr>
@@ -66,11 +66,14 @@
 		<c:forEach var="rep" items="${commentList}">
 			<div id="comment">
 				<hr>
-				<input type="hidden" id="rep_id" name="rep_id"
-					value="${rep.comment_id}"> <input type="hidden"
+				<!-- 입력된 값을 받아오는 부분 -->
+				<input type="hidden" 
+				id="rep_id" name="rep_id" value="${rep.comment_id}"> 
+				<input type="hidden"
 					id="rep_pwd" name="rep_pwd" value="${rep.comment_pwd}">
+				
 				<h4 class="comment-head">작성자 : ${rep.comment_name} &nbsp;
-					&nbsp;작성일 : ${rep.regdate}</h4>
+					&nbsp;작성일 : ${rep.regdate} </h4>
 				<div class="comment-body">
 					<p>${rep.comments}</p>
 				</div>
@@ -95,15 +98,17 @@
 	<hr>
 	<div class="comment-box">
 		<form action="brInsert.do" id="replyForm" method="get">
-			<input type="hidden" id="board_num" name="board_num"
-				value="${board.board_num}"> <input type="hidden" id="page"
+		
+			<input type="hidden" id="board_num" name="board_num" 
+					value="${board.board_num}"> 
+			<input type="hidden" id="page"
 				name="page" value="${currentPage}"> <input type="hidden"
 				id="comments" name="comments" value="">
+		
 			<p align="center">
-				작성자 : <input type="text" name="comment_name" size="23">
-				&nbsp;&nbsp;비밀번호 : <input type="password" name="comment_pwd"
-					size="23"><br> <br>
-				<textarea id="reply_contents" class="form-control" rows="6"
+				작성자 : <input type="text" name="comment_name" size="23">&nbsp;&nbsp;
+				비밀번호 : <input type="password" name="comment_pwd" size="23"><br> <br>
+				<textarea id="reply_contents" name="comments" class="form-control" rows="6"
 					cols="70%"
 					onfocus="if(this.value == 'Message') { this.value = ''; }"
 					onblur="if(this.value == '') { this.value = 'Message'; }"
@@ -119,13 +124,13 @@
 $(function(){
 	// 댓글 Insert Script $('#replyForm').on('submit',function(event){
 	if($('#reply_contents').val() == ""){ 
-		alert("내용을 입력해주세요."); event.preventDefault();
+		alert("내용을 입력해주세요."); 
+		event.preventDefault();
 	} else { 
 		$('#comments').val($('#reply_contents').val()); 
 		return true;	
 	} 
-	});
-
+	
 	//기존 댓글 수정 & 삭제 
 	$(".update").on('click',function(){
 		var parentP = $(this).parent();
@@ -206,5 +211,11 @@ $(function(){
 		}
 	}); 
 
+	
+	
+	
+	});
+
+	
 </script>
 </html>

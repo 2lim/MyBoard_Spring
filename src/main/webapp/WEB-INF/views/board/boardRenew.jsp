@@ -11,7 +11,8 @@
 	rel="stylesheet" type="text/css" />
 <body bgcolor="#FFEFD5">
 	<form name="renewForm" action="bUpdate.do" method="post"
-		enctype="multipart/form- data">
+		encType="multipart/form-data">
+		<!-- encType이 오타없이 잘 적혀야 오류가 뜨지 않음 -->
 		<!-- 아래 hidden은 실어주는 코드이다 이걸 가지고 bUpdate.do로 간다 -->
 		<input type="hidden" name="board_num" value="${board.board_num}">
 		<input type="hidden" name="board_file" value="${board.board_file}">
@@ -52,9 +53,10 @@
 			<tr>
 				<td colspan="2" align="center">
 				<input type="submit" id="renew" value="수정하기"> &nbsp; 
-					<c:url var="blist" value="blist.do">
+					<%-- <c:url var="blist" value="blist.do">
 						<c:param name="page" value="1" />
-					</c:url> <a href="${blist}">목록으로</a></td>
+					</c:url>  --%>
+					<a href="bList.do">목록으로</a></td>
 			</tr>
 		</table>
 	</form>
