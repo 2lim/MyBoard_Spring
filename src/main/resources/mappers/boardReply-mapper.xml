@@ -26,11 +26,11 @@
 	<!-- 댓글 입력 -->
 	<insert id="insertBoardReply" parameterType="BoardReply"
 		flushCache="true" statementType="PREPARED" timeout="20">
-		INSERT INTO
-		BOARD_COMMENT VALUES(
+		INSERT INTO BOARD_COMMENT VALUES(
 		'BR'||TO_CHAR(SYSDATE,'RRMMDD')||LPAD(BOARD_COMMENT_SEQ.NEXTVAL,2,'0'),
 		#{board_num}, #{comment_name}, #{comment_pwd}, #{comments}, SYSDATE)
 	</insert>
+
 	<!-- 댓글 수정 -->
 	<update id="updateBoardReply" parameterType="BoardReply"
 		flushCache="true" statementType="PREPARED" timeout="20">
@@ -43,6 +43,7 @@
 	<delete id="deleteBoardReply" parameterType="BoardReply"
 		flushCache="true" statementType="PREPARED" timeout="20"> DELETE FROM
 		BOARD_COMMENT
-		WHERE COMMENT_ID = #{comment_id} AND COMMENT_PWD = #{comment_pwd}
+		WHERE COMMENT_ID = #{comment_id} AND COMMENT_PWD =
+		#{comment_pwd}
 	</delete>
 </mapper>

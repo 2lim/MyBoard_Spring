@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans:beans
-	xmlns="http://www.springframework.org/schema/mvc"
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:beans="http://www.springframework.org/schema/beans"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
 	xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
 		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd
-		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd">
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd">
 
 	<!-- DispatcherServlet 설정 등록 -->
 	<!-- Spring MVC @Controller 어노테이션 자동 등록 -->
@@ -36,12 +37,51 @@
 		<!-- 1개 밖에 없기 때문에 index, name 생략 -->
 		<!-- ref 하면서 sqlSession템플릿(= id="sqlSession", 템플릿은 생략된것)이 만들어진다 -->
 	</beans:bean>
+	
+	
+		<!-- TransactionManager를 정의하여 Commit, Rollback을 제어한다 -->
+	<!-- 이걸 통해서 하나하나 autocommit false 설정을 하지 않아도 된다
+	트랜잭션을 서블릿 전체에 걸었기 때문에 -->
+	<beans:bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<beans:property name="dataSource" ref="dataSource" />
+	</beans:bean>
+	<!-- Transaction 의 대상 설정 위에서 만든 트랜잭션 매니저를 걸어준다-->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<!-- Transaction의 대상이 되는 메소드를 정의한다 -->
+			<!-- select, insert, update, delete로 시작되는 모든것에rollback을 걸겟다 -->
+			<tx:method name="select*" read-only="true" rollback-for="Exception" />
+			<tx:method name="insert*" rollback-for="Exception" />
+			<tx:method name="update*" rollback-for="Exception" />
+			<tx:method name="delete*" rollback-for="Exception" />
+		</tx:attributes>
+	</tx:advice>
+	
+	<!-- 어노테이션 방식을 사용할떄 사용 -->
+	<!-- @Transactiond이라고 적힌곳에 이걸 걸어주겠다 라는것 -->
+	<!--  <tx:annotation-driven/> -->
+	
+	<!-- AOP를 통해 Transaction의 pointcut 설정 -->
+	<!-- xml 방ㅇ식으로 거는것 이름은 daoMethod라고 지어주고 -->
+	<aop:config proxy-target-class="true">
+		<aop:pointcut id="daoMethod" expression="execution(* com.kh.mynewboard..*Impl.*(..)))" />
+		<!-- .. : 있을수도 있고 없을 수도 있고 -->
+			
+		<aop:advisor id="transactionAdvisor" pointcut-ref="daoMethod" advice-ref="txAdvice" />
+			<!-- 위에 pointcut을 가져와서 txAdvice를 걸어주는데 이는 위에 만든 tx를 참고하는것 -->
+	</aop:config>
+	
 	<!-- /resources/** 폴더 절대 경로 등록 -->
 	<resources mapping="/resources/**" location="/resources/" />
 
 	<!-- Multipart 파일 업로드 관련 bean 등록 -->
-	<beans:bean id="multipartResolver"
-		class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
+	<beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- <beans:property name="maxUploadSize" value="10000000"></beans:property> -->
+		<!-- 파일 크기에 제한을 주고 싶을때 위와 같이 써줄수 있다-->
+		<!-- <beans:property name="maxMemorySize" value="10000000"></beans:property> -->
+		<!-- <beans:property name="defaultEncoding" value="UTF-8"></beans:property> -->
+	</beans:bean>
 
 
 	<!-- Resolves views selected for rendering by @Controllers to .jsp resources 

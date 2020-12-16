@@ -1,5 +1,6 @@
 package com.kh.mynewboard.board.model.service;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,13 +42,25 @@ public class BoardServiceImpl implements BoardService {
 	public void insertBoard(Board b) {
 		bDao.insertBoard(b);
 	}
-
+	
+////TEST
+	//update로 시작하는 service와 dao의 메소드에 aop를 설정하도록 pointcut
+	//expression="execution(* com.kh.mynewboard..Board*.update*(..)))"
+	
 	@Override
+//	@Transactional(rollback = SQLException) //트랜잭션을 어노테이션으로 처리하는 방법
 	public Board updateBoard(Board b) {
+		Board b1 = new Board("tx1", "tx1", "tx1", null, "tx1");
+		int result1 = bDao.insertBoard(b1); // 여기서 해러가나면 아래 update를 수행하지 않는다
+
 		int result = bDao.updateBoard(b);
+		System.out.println("result1 : "+ result);
 		if (result > 0) { // 읽어나온게 있다면
+			System.out.println("result2 : "+ result);
 			b = bDao.selectOne(b.getBoard_num());
 		} else {
+//			throw new MemberNotFoundExcep(); 위에 트랜잭션 어노테이션에 별 다른걸 쓰지 않는다면 여기서 써줄수 있다
+			System.out.println("result3 : "+ result);
 			b = null; //읽어나온게 없다면
 		}
 		return b;

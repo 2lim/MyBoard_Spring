@@ -22,7 +22,7 @@ public class BoardReplyController {
 	@Autowired
 	private BoardReplyService brService;
 	
-	@RequestMapping(value = "brInsert.do", method = RequestMethod.GET) 
+	@RequestMapping(value = "/brInsert.do", method = RequestMethod.GET) 
 	public ModelAndView boardReplyInsert(
 			@RequestParam(name = "board_num") String board_num, 
 			@RequestParam(name = "page", defaultValue = "1") int page, 
@@ -33,13 +33,13 @@ public class BoardReplyController {
 			mv.addObject("page", page); 
 			mv.setViewName("redirect:bDetail.do");
 		} catch (Exception e) { 
-			mv.addObject("msg", e.getMessage()); 
+			mv.addObject("msg", e.getMessage());
 			mv.setViewName("errorPage");
 		}
 			return mv; 
 	}
 	
-	@RequestMapping(value = "brUpdate.do", method = RequestMethod.POST) 
+	@RequestMapping(value = "/brUpdate.do", method = RequestMethod.POST) 
 	public void boardReplyUpdate(HttpServletResponse response, BoardReply br) {
 		PrintWriter out = null;
 		JSONObject job = new JSONObject(); 
@@ -51,14 +51,16 @@ public class BoardReplyController {
 			job.put("ack", -1);
 		} finally { 
 			out.flush();
-			out.close(); }
+			out.close(); 
+			}
 		}
 	
 	@RequestMapping(value = "brDelete.do", method = RequestMethod.POST) 
 	public void boardReplyDelete(HttpServletResponse response, BoardReply br) {
 		PrintWriter out = null;
 		JSONObject job = new JSONObject(); try {
-			job.put("ack", brService.deleteBoardReply(br)); out = response.getWriter();
+			job.put("ack", brService.deleteBoardReply(br)); 
+			out = response.getWriter();
 			out.append( job.toJSONString());
 			} catch (Exception e) { 
 				job.put("ack", -1);

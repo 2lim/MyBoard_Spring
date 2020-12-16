@@ -9,25 +9,8 @@
 <link href="${pageContext.request.contextPath}/resources/css/style.css"
 	rel="stylesheet" type="text/css" />
 <script type="text/javascript"
-	src="${pageContext.request.contextPath}/resources/js/jquery- 3.2.1.min.js"></script>
-<script type="text/javascript">
-	$(function() {
-		$('form[name=listForm]').on(
-				'submit',
-				function(e) {
-					if ($('input[name=keyword]').val() == null
-							|| $('input[name=keyword]').val() == "") {
-						alert("검색어를 입력해 주세요");
-						e.preventDefault();
-					} else {
-						return true;
-					}
-				});
-	});
-	function showInsertForm() {
-		location.href = "writeForm.do";
-	}
-</script>
+	src="${pageContext.request.contextPath}/resources/js/jquery-3.5.1.js"></script>
+
 </head>
 <body bgcolor="#FFEFD5">
 	<h1>Spring MVC 서버</h1>
@@ -113,4 +96,21 @@
 		</tr>
 	</table>
 </body>
+<script type="text/javascript">
+	$(function() {
+		$('form[name=listForm]').on('submit',function(e) {
+					if ($('input[name=keyword]').val() == null
+							|| $('input[name=keyword]').val() == "") {
+						alert("검색어를 입력해 주세요");
+						e.preventDefault();
+					} else {
+						return true;
+					}
+				});
+	});
+	function showInsertForm() {
+		location.href = "writeForm.do";
+	}
+</script>
+
 </html>
